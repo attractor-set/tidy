@@ -39,13 +39,10 @@ activities <- read.table("./Dataset/activity_labels.txt", header=FALSE, colClass
 features <- read.table("./Dataset/features.txt", header=FALSE, colClasses="character")
 ## clean and merge data
 data <- rbind(getTestJoinTable(features, activities), getTrainJoinTable(features, activities))
+data <- cbind(cbind(as.character(data$Activity), data$Subject), cbind(data[, grep("std", names(data))], data[, grep("mean", names(data))]))
+names(data)[1:2] <- c("Activity", "Subject")
 
-## calculate mean
-data_mean<-sapply(data, mean, na.rm=TRUE)
-## calculate standard deviation
-data_sd<-sapply(data, sd, na.rm=TRUE)
-
-## clone table from data
+## copy dataset to the table
 DT <- data.table(data)
 ## create second tidy data
 tidy<-DT[,lapply(.SD,mean),by="Activity,Subject"]
